@@ -2,7 +2,10 @@ import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 
+// import of router
 import userRouter from './routes/user.route.js';
+import authRouter from './routes/auth.route.js';
+
 
 // manage env file
 dotenv.config();
@@ -15,10 +18,12 @@ mongoose.connect(process.env.MONGO).then(() => {
     console.log('error connecting');
 });
 
+//allow server to pass JSON data 
+app.use(express.json());
 
 // API routes are creating 
 app.use('/api/user', userRouter);
-
+app.use('/api/auth', authRouter);
 
 
 // port number
