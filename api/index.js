@@ -15,7 +15,7 @@ const app = express();
 mongoose.connect(process.env.MONGO).then(() => {
     console.log('connected to Mongoose');
 }).catch(err=>{
-    console.log('error connecting');
+    console.log('error connecting', err);
 });
 
 //allow server to pass JSON data 
