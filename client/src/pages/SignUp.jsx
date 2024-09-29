@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-
+import Oath from '../components/Oath';
 export default function SignUp() {
 
   const navigate = useNavigate();
@@ -92,6 +92,7 @@ export default function SignUp() {
                     >
                         {loading ? "loading..." : "Sign Up"}
                     </button>
+                    <Oath />
                 </form>
                 <p className="mt-6 text-center text-gray-600">
                     Already have an account?{' '}

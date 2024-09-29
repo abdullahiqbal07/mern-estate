@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useSelector ,useDispatch } from 'react-redux'
 import { signInStart, signInSuccess, signInFailure } from '../redux/user/UserSlice';
+import Oath from '../components/Oath';
 
 export default function SignIn() {
 
@@ -89,6 +90,7 @@ export default function SignIn() {
                     >
                         {loading ? "loading..." : "Sign In"}
                     </button>
+                    <Oath />
                 </form>
                 <p className="mt-6 text-center text-gray-600">
                     Dont have an account?{' '}
