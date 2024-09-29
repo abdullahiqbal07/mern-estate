@@ -35,7 +35,6 @@ export default function Oath() {
 
       
       const data = await response.json();
-      console.log(data);
       dispatch(signInSuccess(data));
       navigate("/")
     } catch (error) {

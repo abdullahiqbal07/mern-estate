@@ -11,7 +11,7 @@ import { persistor } from "./redux/Store";
 ReactDOM.createRoot(document.getElementById("root")).render(
   // <React.StrictMode>
   <Provider store={store}>
-    <PersistGate persistor={persistor} loading={null}>
+    <PersistGate loading={null} persistor={persistor} >
     <App />
     </PersistGate>
   </Provider>

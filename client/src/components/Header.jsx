@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { FaSearch, FaBars, FaTimes } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { useSelector } from 'react-redux'
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+
+  const curentUser = useSelector(state => state.user.currentUser) 
+  console.log(curentUser);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -64,8 +68,8 @@ export default function Header() {
             <Link to="/about">
               <li className="hover:underline cursor-pointer">About</li>
             </Link>
-            <Link to="/sign-in">
-              <li className="hover:underline cursor-pointer">Sign In</li>
+            <Link to="/profile">
+              {curentUser ? <img src={curentUser.avatar} alt="profilePic" className="rounded-full h-7 w-7 object-cover" /> : <li className="hover:underline cursor-pointer">Sign In</li>}
             </Link>
           </ul>
         </div>
