@@ -1,6 +1,7 @@
 import express from 'express';
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import cookieParser from 'cookie-parser';
 
 // import of router
 import userRouter from './routes/user.route.js';
@@ -20,6 +21,7 @@ mongoose.connect("mongodb://localhost:27017/mern-state").then(() => {
 
 //allow server to pass JSON data 
 app.use(express.json());
+app.use(cookieParser());
 
 // API routes are creating 
 app.use('/api/user', userRouter);
