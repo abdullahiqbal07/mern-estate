@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 // import of router
 import userRouter from './routes/user.route.js';
 import authRouter from './routes/auth.route.js';
+import listingRouter from './routes/listing.route.js';
 
 
 // manage env file
@@ -26,6 +27,7 @@ app.use(cookieParser());
 // API routes are creating 
 app.use('/api/user', userRouter);
 app.use('/api/auth', authRouter);
+app.use('/api/listing', listingRouter);
 
 // error handling middleware
 app.use((err, req, res, next) => {
