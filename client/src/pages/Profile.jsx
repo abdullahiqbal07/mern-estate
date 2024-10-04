@@ -7,6 +7,9 @@ import {
   deleteStart,
   deleteSuccess,
   deleteFailure,
+  signOutStart,
+  signOutSuccess,
+  signOutFailure,
 } from "../redux/user/UserSlice";
 import {
   getDownloadURL,
@@ -92,7 +95,7 @@ export default function Profile() {
 
   const handleDelete = async() => {
     try {
-      dispatch(deleteSuccess())
+      dispatch(deleteStart())
 
       const response = await fetch(`/api/user/deleteuser/${currentUser._id}`,{
         method: 'DELETE'
@@ -103,6 +106,18 @@ export default function Profile() {
 
     } catch (error) {
       dispatch(deleteFailure(error.message));
+    }
+  }
+
+  const handleSignOut = async() => {
+    try {
+      dispatch(signOutStart());
+      const response = await fetch("/api/auth/signout");
+      const data = await response.json();
+
+      dispatch(signOutSuccess());
+    } catch (error) {
+      dispatch(signOutFailure(error.message));
     }
   }
 
@@ -182,7 +197,7 @@ export default function Profile() {
       </form>
       <div className="flex justify-between mt-5">
         <span onClick={handleDelete} className="text-red-600 cursor-pointer">Delete Account</span>
-        <span className="text-red-600 cursor-pointer">Sign Out</span>
+        <span onClick={handleSignOut} className="text-red-600 cursor-pointer">Sign Out</span>
       </div>
       <p>{error ? <span className="text-red-700">{error}</span> : " "}</p>
       <p>
