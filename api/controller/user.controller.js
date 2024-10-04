@@ -17,20 +17,38 @@ export const updateUser = async (req, res, next) => {
       req.body.password = bcrypt.hashSync(req.body.password, 10);
     }
 
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, {
-      $set: {
-        username : req.body.username,
-        email : req.body.email,
-        password : req.body.password,
-        avatar : req.body.avatar
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        $set: {
+          username: req.body.username,
+          email: req.body.email,
+          password: req.body.password,
+          avatar: req.body.avatar,
+        },
       },
-    }, {new: true});
+      { new: true }
+    );
 
     // console.log(updatedUser)
 
-    const { password, ...restUser } = updatedUser._doc
+    const { password, ...restUser } = updatedUser._doc;
 
     res.status(201).json(restUser);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const deleteUser = async (req, res, next) => {
+  if (req.user.id !== req.params.id) {
+    return next(errorHandler(401, "you can only update your account"));
+  }
+
+  try {
+    const deletedUser = await User.findByIdAndDelete(req.params.id);
+    res.clearCookie("access_token");
+    res.status(201).json({ message: "user deleted successfully" });
   } catch (error) {
     next(error);
   }
