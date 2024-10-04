@@ -102,6 +102,10 @@ export default function Profile() {
       })
 
       const data = await response.json();
+      if(data.success === false) {
+        dispatch(deleteFailure(data.message));
+        return;  
+      }
       dispatch(deleteSuccess());
 
     } catch (error) {
@@ -114,7 +118,10 @@ export default function Profile() {
       dispatch(signOutStart());
       const response = await fetch("/api/auth/signout");
       const data = await response.json();
-
+      if(data.success === false) {
+        dispatch(signOutFailure(data.message));
+        return;  
+      }
       dispatch(signOutSuccess());
     } catch (error) {
       dispatch(signOutFailure(error.message));
