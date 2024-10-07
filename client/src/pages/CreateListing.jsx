@@ -1,6 +1,85 @@
-import React from "react";
+import React, { useState } from "react";
+import { app } from "../firebase";
+import {
+  getDownloadURL,
+  getStorage,
+  ref,
+  uploadBytesResumable,
+} from "firebase/storage";
+
 
 export default function CreateListing() {
+  const [file, setFile] = useState([]);
+  const [formData, setFormData] = useState({
+    imageUrl: [],
+  });
+  const [uploadError, setUploadError] = useState("");
+  const [error, setError] = useState(false);
+  const [uploadSuccess, setUploadSuccess] = useState(false);
+
+  console.log(formData);
+
+  const handleUpload = () => {
+    if (file.length > 0 && file.length + formData.imageUrl.length < 7) {
+        setUploadSuccess(true);
+      const promises = [];
+      for (let i = 0; i < file.length; i++) {
+        promises.push(storeImage(file[i]));
+      }
+      console.log(promises);
+      Promise.all(promises)
+        .then((url) => {
+          setFormData({ ...formData, imageUrl: formData.imageUrl.concat(url) });
+          setError(false);
+          setUploadSuccess(false);
+          setUploadError("");
+        })
+        .catch((error) => {
+          setError(true);
+          setUploadSuccess(false);
+          setUploadError("Image size should be less than 2mb");
+        });
+    } else {
+      setError(true);
+      setUploadSuccess(false);
+      setUploadError("upload images should be less than 6");
+    }
+  };
+
+  const storeImage = async (file) => {
+    return new Promise((resolve, reject) => {
+      const storage = getStorage(app);
+      const fileName = new Date().getTime() + file.name;
+      const storageRef = ref(storage, fileName);
+      const uploadImage = uploadBytesResumable(storageRef, file);
+      console.log(":");
+      uploadImage.on(
+        "state_change",
+        (snapshot) => {
+          const progress =
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+          console.log("here we upload");
+          console.log(progress);
+        },
+        (err) => {
+          reject(err);
+        },
+        () => {
+          getDownloadURL(uploadImage.snapshot.ref).then((downloadURL) => {
+            resolve(downloadURL);
+          });
+        }
+      );
+    });
+  };
+
+  const handleDelete = (index) => {
+    setFormData((prev) => ({
+      ...prev, 
+      imageUrl: prev.imageUrl.filter((url, i) => i !== index) // use 'prev' here to access the previous state correctly
+    }));
+  }
+
   return (
     <main className="p-3 max-w-4xl mx-auto">
       <h1 className="text-3xl font-semibold text-center my-7">
@@ -116,12 +195,29 @@ export default function CreateListing() {
               accept="image/*"
               multiple
               className="p-3 border border-gray-300 rounded w-full "
+              onChange={(e) => setFile(e.target.files)}
             />
-            <button className="text-green-700 uppercase p-3 border border-green-700 rounded-lg hover:shadow-lg disabled:opacity-95">
-              upload
+            <button
+              className="text-green-700 uppercase p-3 border border-green-700 rounded-lg hover:shadow-lg disabled:opacity-95"
+              type="button"
+              onClick={() => handleUpload()}
+              disabled={uploadSuccess}
+            >
+              {uploadSuccess ? "uploading..." : "upload"}
             </button>
           </div>
-          <button className="bg-slate-700 text-white py-3 rounded-lg transition duration-200 hover:opacity-95 uppercase disabled:opacity-95 my-2">
+          <p>{error && <span className="text-red-700">{uploadError}</span>}</p>
+          {
+            formData.imageUrl?.length > 0 && formData.imageUrl.map((image, index) => {
+                return (
+                    <div key={image} className="flex justify-between border items-center p-2 shadow-md ">
+                        <img src={image} alt={image} className="w-20 h-20 object-cover rounded-lg" />
+                        <button onClick={()=>handleDelete(index)} className="text-red-700 uppercase p-3 hover:opacity-95">Delete</button>
+                    </div>
+                )
+            })
+          }
+          <button type="button" className="bg-slate-700 text-white py-3 rounded-lg transition duration-200 hover:opacity-95 uppercase disabled:opacity-95 my-2">
             Create Listing
           </button>
         </div>
