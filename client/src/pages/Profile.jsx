@@ -30,7 +30,6 @@ export default function Profile() {
   const [errors, setError] = useState(false);
   const [formData, setFormData] = useState({});
   const [success, setSuccess] = useState(false);
-  console.log(formData);
 
   useEffect(() => {
     if (file) {

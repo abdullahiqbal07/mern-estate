@@ -7,7 +7,6 @@ export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
 
   const curentUser = useSelector(state => state.user.currentUser) 
-  console.log(curentUser);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
