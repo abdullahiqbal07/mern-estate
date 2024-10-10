@@ -18,7 +18,7 @@ import {
   uploadBytesResumable,
 } from "firebase/storage";
 import { app } from "../firebase";
-import { Link } from "react-router-dom" 
+import { Link } from "react-router-dom";
 
 export default function Profile() {
   const createRef = useRef(null);
@@ -30,6 +30,8 @@ export default function Profile() {
   const [errors, setError] = useState(false);
   const [formData, setFormData] = useState({});
   const [success, setSuccess] = useState(false);
+  const [listings, setListings] = useState([]);
+  const [showListings, setShowListings] = useState(false);
 
   useEffect(() => {
     if (file) {
@@ -93,40 +95,66 @@ export default function Profile() {
     }
   };
 
-  const handleDelete = async() => {
+  const handleDelete = async () => {
     try {
-      dispatch(deleteStart())
+      dispatch(deleteStart());
 
-      const response = await fetch(`/api/user/deleteuser/${currentUser._id}`,{
-        method: 'DELETE'
-      })
+      const response = await fetch(`/api/user/deleteuser/${currentUser._id}`, {
+        method: "DELETE",
+      });
 
       const data = await response.json();
-      if(data.success === false) {
+      if (data.success === false) {
         dispatch(deleteFailure(data.message));
-        return;  
+        return;
       }
       dispatch(deleteSuccess());
-
     } catch (error) {
       dispatch(deleteFailure(error.message));
     }
-  }
+  };
 
-  const handleSignOut = async() => {
+  const handleSignOut = async () => {
     try {
       dispatch(signOutStart());
       const response = await fetch("/api/auth/signout");
       const data = await response.json();
-      if(data.success === false) {
+      if (data.success === false) {
         dispatch(signOutFailure(data.message));
-        return;  
+        return;
       }
       dispatch(signOutSuccess());
     } catch (error) {
       dispatch(signOutFailure(error.message));
     }
-  }
+  };
+
+  const handleListings = async (e) => {
+    e.preventDefault();
+    if (showListings) {
+      // Hide listings if they are currently visible
+      setShowListings(false);
+    } else {
+      if (listings.length > 0) {
+        setShowListings(true);
+        return;
+      }
+      try {
+        const response = await fetch(`/api/user/listings/${currentUser._id}`);
+        const data = await response.json();
+        if (data.success === false) {
+          setError(true);
+          return;
+        }
+        console.log(data);
+        setListings(data);
+        setError(false);
+        setShowListings(true); 
+      } catch (error) {
+        setError(true);
+      }
+    }
+  };
 
   return (
     <div className="p-3 mx-auto max-w-lg">
@@ -201,13 +229,20 @@ export default function Profile() {
         >
           {loading ? "Loading..." : "Update"}
         </button>
-      <Link to="/create-listing" className="bg-green-700 text-white py-3 rounded w-full text-center transition duration-200 hover:opacity-95 uppercase disabled:opacity-95" >
+        <Link
+          to="/create-listing"
+          className="bg-green-700 text-white py-3 rounded w-full text-center transition duration-200 hover:opacity-95 uppercase disabled:opacity-95"
+        >
           create Listing
-      </Link>
+        </Link>
       </form>
       <div className="flex justify-between mt-5">
-        <span onClick={handleDelete} className="text-red-600 cursor-pointer">Delete Account</span>
-        <span onClick={handleSignOut} className="text-red-600 cursor-pointer">Sign Out</span>
+        <span onClick={handleDelete} className="text-red-600 cursor-pointer">
+          Delete Account
+        </span>
+        <span onClick={handleSignOut} className="text-red-600 cursor-pointer">
+          Sign Out
+        </span>
       </div>
       <p>{error ? <span className="text-red-700">{error}</span> : " "}</p>
       <p>
@@ -219,6 +254,44 @@ export default function Profile() {
           " "
         )}
       </p>
+      <button
+        onClick={handleListings}
+        className="text-green-700 uppercase w-full my-3"
+      >
+        {showListings ? 'Hide Listings' : 'Show Listings'}
+      </button>
+      {showListings && listings && listings.length > 0 && (
+        <div className="flex flex-col gap-2 mt-7">
+          <h1 className="text-2xl font-semibold text-center my-3">Your Listings</h1>
+          {listings.map((listing) => {
+            return (
+              <div
+                key={listing._id}
+                className="flex justify-between shadow-md items-center border rounded-lg p-2 gap-2 "
+              >
+                <Link to={`/api/listing/${listing._id}`}>
+                  <img
+                    className="w-16 h-16 object-contain"
+                    src={listing.imageUrls[0]}
+                    alt={listing.name}
+                  />
+                </Link>
+                <Link
+                  className="font-semibold hover:underline truncate flex-1"
+                  to={`/api/listing/${listing._id}`}
+                >
+                  <p>{listing.name}</p>
+                </Link>
+
+                <div className="flex flex-col">
+                  <button className="text-red-700 uppercase ">Delete</button>
+                  <button className="text-green-700 uppercase ">Edit</button>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 }
