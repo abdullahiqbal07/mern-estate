@@ -56,15 +56,17 @@ export const deleteUser = async (req, res, next) => {
 };
 
 export const getListings = async (req, res, next) => {
-  if(req.user.id === req.params.id){
+  if (req.user.id === req.params.id) {
     try {
-      const listings = await Listing.find({userRef: req.params.id})
-      console.log(listings)
+      const listings = await Listing.find({ userRef: req.params.id });
+      if (listings.length < 1) {
+        return next(errorHandler(404, "Not Found"));
+      }
       res.status(201).json(listings);
     } catch (error) {
       next(error);
     }
-  }else{
-    return next(errorHandler(401, "you can only view your listings"))
+  } else {
+    return next(errorHandler(401, "you can only view your listings"));
   }
 };
