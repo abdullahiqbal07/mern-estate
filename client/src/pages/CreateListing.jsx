@@ -155,7 +155,7 @@ export default function CreateListing() {
         return;
       }
       setApiError("");
-      navigate(`/api/listing/${data._id}`);
+      navigate(`/listing/${data._id}`);
     } catch (error) {
       setLoading(false);
       setApiError("");
