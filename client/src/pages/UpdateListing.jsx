@@ -45,7 +45,7 @@ export default function UpdateListing() {
           setApiError(data.message);
           return;
         }
-        setFormData({ ...formData, ...data });
+        setFormData(data);
         setApiError("");
       } catch (error) {
         setApiError(error);
@@ -288,7 +288,7 @@ export default function UpdateListing() {
                 max="10"
                 required
                 onChange={handleChange}
-                defaultValue={formData.bedrooms}
+                value={formData.bedrooms}
               />
               <p>Beds</p>
             </div>
@@ -301,7 +301,7 @@ export default function UpdateListing() {
                 max="10"
                 required
                 onChange={handleChange}
-                defaultValue={formData.bathrooms}
+                value={formData.bathrooms}
               />
               <p>Baths</p>
             </div>
@@ -312,7 +312,7 @@ export default function UpdateListing() {
                 className="rounded-lg border-gray-300 p-3"
                 required
                 onChange={handleChange}
-                defaultValue={formData.regularPrice}
+                value={formData.regularPrice}
               />
               <p className="flex flex-col items-center">
                 Regular Price{" "}
@@ -329,7 +329,7 @@ export default function UpdateListing() {
                   className="rounded-lg border-gray-300 p-3"
                   required
                   onChange={handleChange}
-                  defaultValue={formData.discountPrice}
+                  value={formData.discountPrice}
                 />
                 <p className="flex flex-col items-center">
                   Discount Price{" "}
