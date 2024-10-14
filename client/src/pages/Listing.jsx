@@ -7,8 +7,16 @@ import SwiperCore from "swiper";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import "swiper/css/scrollbar";
-import { FaBath, FaBed, FaChair, FaMapMarkerAlt, FaShare} from "react-icons/fa";
+import {
+  FaBath,
+  FaBed,
+  FaChair,
+  FaMapMarkerAlt,
+  FaShare,
+} from "react-icons/fa";
 import { FaSquareParking } from "react-icons/fa6";
+import { useSelector } from "react-redux";
+import Contact from "../components/Contact";
 
 export default function Listing() {
   const { listingId } = useParams();
@@ -16,8 +24,9 @@ export default function Listing() {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [copy, setCopy] = useState(false);
+  const [contact, setContact] = useState(false);
+  const currentUser = useSelector((state) => state.user.currentUser);
   //   SwiperCore.use([Navigation])
-  console.log(listing.imageUrls);
 
   useEffect(() => {
     console.log("Loading");
@@ -136,19 +145,24 @@ export default function Listing() {
           </li>
 
           <li className="flex items-center gap-2">
-          <FaSquareParking />
-            {listing.parking
-              ? " parking"
-              : " no parking"}
+            <FaSquareParking />
+            {listing.parking ? " parking" : " no parking"}
           </li>
 
           <li className="flex items-center gap-2">
-          <FaChair />
-            {listing.furnished
-              ? " furnished"
-              : " not furnished"}
+            <FaChair />
+            {listing.furnished ? " furnished" : " not furnished"}
           </li>
         </ul>
+        {currentUser && listing.userRef !== currentUser._id && !contact && (
+          <button
+            onClick={() => setContact(true)}
+            className="bg-slate-700 text-white my-7 py-3 rounded transition duration-200 hover:opacity-95 uppercase disabled:opacity-95"
+          >
+            Contact LandLoard
+          </button>
+        )}
+        {contact && <Contact listing={listing} />}
       </div>
     </main>
   );
