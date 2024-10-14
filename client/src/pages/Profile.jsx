@@ -32,6 +32,7 @@ export default function Profile() {
   const [success, setSuccess] = useState(false);
   const [listings, setListings] = useState([]);
   const [showListings, setShowListings] = useState(false);
+  console.log(currentUser.avatar)
 
   useEffect(() => {
     if (file) {
@@ -190,7 +191,7 @@ export default function Profile() {
         />
 
         <img
-          src={formData?.avatar || currentUser.avatar}
+          src={formData?.avatar || currentUser?.avatar}
           alt="profilePic"
           className="rounded-full h-24 w-24 mt-2 object-cover cursor-pointer self-center"
           onClick={() => createRef.current.click()}
