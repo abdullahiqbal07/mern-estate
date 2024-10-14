@@ -1,12 +1,29 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaSearch, FaBars, FaTimes } from "react-icons/fa";
-import { Link } from "react-router-dom";
-import { useSelector } from 'react-redux'
+import { Link, useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchMessage, setSearchMessage] = useState("");
+  const curentUser = useSelector((state) => state.user.currentUser);
+  const navigate = useNavigate();
 
-  const curentUser = useSelector(state => state.user.currentUser) 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    let urlParams = new URLSearchParams(window.location.search);
+    urlParams.set("searchTerm", searchMessage);
+    const searchQuery = urlParams.toString();
+    navigate(`/search?${searchQuery}`);
+  };
+
+  useEffect(() => {
+    let urlParams = new URLSearchParams(window.location.search);
+    const message = urlParams.get("searchTerm");
+    if (message) {
+      setSearchMessage(message);
+    }
+  }, [location.search]);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -23,13 +40,18 @@ export default function Header() {
         </Link>
         <div className="flex justify-between ">
           <div className="relative w-full sm:w-auto">
-            <form>
+            <form onSubmit={handleSubmit}>
               <input
                 type="text"
                 placeholder="Search..."
                 className="w-28 sm:w-96 pl-10 pr-4 py-2 rounded-full bg-gray-700 text-white placeholder-gray-400 focus:outline-none"
+                onChange={(e) => setSearchMessage(e.target.value)}
+                value={searchMessage}
               />
-              <FaSearch className="block absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500" />
+              <FaSearch
+                onClick={handleSubmit}
+                className="block absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-500"
+              />
             </form>
           </div>
         </div>
@@ -68,7 +90,15 @@ export default function Header() {
               <li className="hover:underline cursor-pointer">About</li>
             </Link>
             <Link to="/profile">
-              {curentUser ? <img src={curentUser.avatar} alt="profilePic" className="rounded-full h-7 w-7 object-cover" /> : <li className="hover:underline cursor-pointer">Sign In</li>}
+              {curentUser ? (
+                <img
+                  src={curentUser.avatar}
+                  alt="profilePic"
+                  className="rounded-full h-7 w-7 object-cover"
+                />
+              ) : (
+                <li className="hover:underline cursor-pointer">Sign In</li>
+              )}
             </Link>
           </ul>
         </div>
