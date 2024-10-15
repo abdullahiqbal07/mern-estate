@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
+import ListingItems from "../components/ListingItems";
 
 export default function Search() {
   const [searchData, setSearchData] = useState({
@@ -13,7 +14,7 @@ export default function Search() {
   });
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [listings, setListings] = useState(null);
+  const [listings, setListings] = useState([]);
   console.log(listings);
 
   const handleChange = (event) => {
@@ -101,8 +102,8 @@ export default function Search() {
       const searchQuery = urlParams.toString();
       const response = await fetch(`/api/listing/get?${searchQuery}`);
       const data = await response.json();
-      setListings(data);
       setLoading(false);
+      setListings(data);
     };
 
     fetchListings();
@@ -224,7 +225,29 @@ export default function Search() {
           </button>
         </form>
       </div>
-      <div className="p-7">listing functionality</div>
+      <div className="flex-1 flex flex-col">
+        <h1 className="text-3xl text-slate-600 p-7 w-full font-semibold border-b-2">
+          Listings Results:
+        </h1>
+        <div className="p-7 flex flex-row flex-wrap gap-4 w-full justify-between">
+          {loading && (
+            <p className="text-3xl font-semibold text-center mt-14">
+              Loading...
+            </p>
+          )}
+
+          {!loading && listings?.length === 0 && (
+            <p className="text-3xl font-semibold text-center mt-14">
+              No list is found...
+            </p>
+          )}
+          {!loading &&
+            listings &&
+            listings?.map((listing) => (
+              <ListingItems key={listing._id} listing={listing} />
+            ))}
+        </div>
+      </div>
     </main>
   );
 }
