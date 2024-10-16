@@ -121,7 +121,7 @@ export default function UpdateListing() {
   };
 
   const handleChange = (event) => {
-    if (event.target.id === "sell" || event.target.id === "rent") {
+    if (event.target.id === "sale" || event.target.id === "rent") {
       setFormData({ ...formData, type: event.target.id });
     }
 
@@ -229,12 +229,12 @@ export default function UpdateListing() {
             <div className="flex gap-2 ">
               <input
                 type="checkbox"
-                id="sell"
+                id="sale"
                 className="w-5"
                 onChange={handleChange}
-                checked={formData.type === "sell"}
+                checked={formData.type === "sale"}
               />
-              <label htmlFor="sell">Sell</label>
+              <label htmlFor="sale">sale</label>
             </div>
             <div className="flex gap-2 ">
               <input
@@ -316,7 +316,7 @@ export default function UpdateListing() {
               />
               <p className="flex flex-col items-center">
                 Regular Price{" "}
-                <span className=" text-sm" hidden={formData.type === "sell"}>
+                <span className=" text-sm" hidden={formData.type === "sale"}>
                   ($/month)
                 </span>
               </p>
@@ -333,7 +333,7 @@ export default function UpdateListing() {
                 />
                 <p className="flex flex-col items-center">
                   Discount Price{" "}
-                  <span className=" text-sm" hidden={formData.type === "sell"}>
+                  <span className=" text-sm" hidden={formData.type === "sale"}>
                     ($/month)
                   </span>
                 </p>

@@ -9,9 +9,12 @@ import {
 } from "react-icons/fa";
 import { FaSquareParking } from "react-icons/fa6";
 
-export default function ListingItems({ listing }) {
+export default function ListingItems({ listing, home=false }) {
+  const homeStyle = 'bg-white max-w-[500px] flex flex-col shadow-md transition-shadow duration-300 hover:shadow-lg rounded-lg overflow-hidden w-full sm:w-[330px]';
+  const defaultStyle = 'bg-white shadow-md hover:shadow-lg transition-shadow overflow-hidden rounded-lg w-full sm:w-[330px] lg:w-[48%]';
+
   return (
-    <div className="bg-white max-w-[500px] flex flex-col shadow-md transition-shadow duration-300 hover:shadow-lg rounded-lg overflow-hidden w-full sm:w-[330px] lg:w-[48%]">
+    <div className={home ? homeStyle : defaultStyle}>
       <Link to={`/listing/${listing._id}`}>
         <img
           src={
@@ -39,7 +42,7 @@ export default function ListingItems({ listing }) {
               : listing?.regularPrice.toLocaleString("en-US")}
             {listing.type === "rent" && " / month"}
           </p>
-          <ul className="text-green-900 font-semibold text-sm flex flex-wrap items-center gap-4 sm:gap-6">
+          <ul className="text-green-900 font-semibold text-sm flex flex-wrap items-center gap-2 sm:gap-4">
             <li className="flex items-center gap-2 ">
               <FaBed />
               {listing.bedrooms > 1
