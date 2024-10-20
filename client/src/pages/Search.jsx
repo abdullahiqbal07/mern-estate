@@ -16,7 +16,6 @@ export default function Search() {
   const [loading, setLoading] = useState(false);
   const [show, setShow] = useState(false);
   const [listings, setListings] = useState([]);
-  console.log(listings.length);
 
   const handleChange = (event) => {
     if (
@@ -99,6 +98,7 @@ export default function Search() {
     }
 
     const fetchListings = async () => {
+     try {
       setLoading(true);
       setShow(false);
       const searchQuery = urlParams.toString();
@@ -111,6 +111,9 @@ export default function Search() {
       }
       setLoading(false);
       setListings(data);
+     } catch (error) {
+      console.log(error);
+     }
     };
 
     fetchListings();

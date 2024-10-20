@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { FaSearch, FaBars, FaTimes } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
@@ -8,6 +8,7 @@ export default function Header() {
   const [searchMessage, setSearchMessage] = useState("");
   const curentUser = useSelector((state) => state.user.currentUser);
   const navigate = useNavigate();
+  const menuRef = useRef(null); // Reference to the menu container
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -25,12 +26,29 @@ export default function Header() {
     }
   }, [location.search]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (menuRef.current && !menuRef.current.contains(event.target)) {
+        setMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // Handle menu item click
+  const handleMenuItemClick = () => {
+    setMenuOpen(false);
+  };
+
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
   };
 
   return (
-    <header className="bg-gray-800 text-white p-4 ">
+    <header className="bg-gray-800 text-white p-4 " ref={menuRef}>
       <div className="flex items-center justify-between max-w-6xl mx-auto">
         <Link to="/">
           <h1 className="text-lg font-bold sm:text-xl flex flex-wrap">
@@ -79,17 +97,17 @@ export default function Header() {
 
         <div className="">
           <ul
-            className={`flex-col space-y-2 ${
+            className={`absolute top-16 left-0 w-full bg-gray-800 text-white shadow-md sm:static sm:flex sm:bg-transparent sm:shadow-none p-4 sm:p-0 border-b-2 sm:border-none border-slate-600 sm:w-auto flex-col sm:flex-row items-center space-y-4 sm:space-y-0 sm:space-x-6 ${
               menuOpen ? "flex" : "hidden"
-            } sm:flex sm:flex-row sm:space-y-0 sm:space-x-4 `}
+            } z-20`}
           >
-            <Link to="/">
+            <Link to="/" onClick={handleMenuItemClick}>
               <li className="hover:underline cursor-pointer">Home</li>
             </Link>
-            <Link to="/about">
+            <Link to="/about" onClick={handleMenuItemClick}>
               <li className="hover:underline cursor-pointer">About</li>
             </Link>
-            <Link to="/profile">
+            <Link to="/profile" onClick={handleMenuItemClick}>
               {curentUser ? (
                 <img
                   src={curentUser.avatar}

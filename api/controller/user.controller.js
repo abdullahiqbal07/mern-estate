@@ -13,6 +13,21 @@ export const updateUser = async (req, res, next) => {
     return next(errorHandler(401, "you can only update your account"));
   }
 
+  // Check if the new email already exists in the database
+  if (req.body.email) {
+    const existingUser = await User.findOne({ email: req.body.email });
+
+    // If the email exists and it's not the current user, return an error
+    if (existingUser && existingUser._id.toString() !== req.user.id) {
+      return next(
+        errorHandler(
+          400,
+          "Email already exists. Please choose a different one."
+        )
+      );
+    }
+  }
+
   try {
     if (req.body.password) {
       req.body.password = bcrypt.hashSync(req.body.password, 10);

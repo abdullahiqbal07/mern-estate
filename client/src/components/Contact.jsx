@@ -1,20 +1,31 @@
 import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { tokenExpired } from "../redux/user/UserSlice";
 
 export default function Contact({ listing }) {
-  console.log(listing);
+  const dispatch = useDispatch();
   const [userdata, setUserData] = useState(null);
   const [message, setMessage] = useState("");
   console.log(userdata);
   useEffect(() => {
     const getUser = async () => {
-      const response = await fetch(`/api/user/get/${listing.userRef}`);
-      const data = await response.json();
-      if (data.success === false) {
-        console.log(data.message);
-        return;
+      try {
+        const response = await fetch(`/api/user/get/${listing.userRef}`);
+        if (response.status === 401) {
+          // Token expired, dispatch action and handle redirection
+          dispatch(tokenExpired());
+          return; // Stop further execution
+        }
+        const data = await response.json();
+        if (data.success === false) {
+          console.log(data.message);
+          return;
+        }
+        setUserData(data);
+      } catch (error) {
+        console.log(error.message);
       }
-      setUserData(data);
     };
     getUser();
   }, []);
@@ -43,7 +54,7 @@ export default function Contact({ listing }) {
             placeholder="Enter your message here..."
           ></textarea>
           <Link
-            to={`mailto:${userdata.email}?subject=Regarding ${listing.name}&body=${message}`}
+            to={`mailto:${userdata.email}?subject=Regarding${listing.name}&body=${message}`}
             className="bg-slate-700 text-center text-white py-3 rounded transition duration-200 hover:opacity-95 uppercase disabled:opacity-95"
           >
             Send Message

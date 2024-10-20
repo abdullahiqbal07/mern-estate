@@ -14,7 +14,7 @@ dotenv.config();
 const app = express();
 
 // connect to database server
-mongoose.connect("mongodb://localhost:27017/mern-state").then(() => {
+mongoose.connect(process.env.MONGO).then(() => {
     console.log('connected to Mongoose');
 }).catch(err=>{
     console.log('error connecting', err);

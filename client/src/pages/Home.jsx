@@ -64,9 +64,12 @@ export default function Home() {
           <br />
           Our expert support are always available.
         </p>
-        <p className="text-blue-700 font-bold underline hover:no-underline cursor-pointer">
-          Let's Start Now
-        </p>
+        <Link
+          to={'/search'}
+          className="text-blue-700 font-bold underline hover:no-underline cursor-pointer"
+        >
+          Let's get started...
+        </Link>
       </div>
 
       {/* swipper */}
@@ -118,7 +121,7 @@ export default function Home() {
       <div className="max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10">
         <div className="my-3">
           <h2 className="text-2xl font-semibold text-slate-600">
-            Recent offers
+            Recent Rents
           </h2>
           <Link
             className="text-sm text-blue-800 hover:underline"
@@ -138,7 +141,7 @@ export default function Home() {
       <div className="max-w-6xl mx-auto p-3 flex flex-col gap-8 my-10">
         <div className="my-3">
           <h2 className="text-2xl font-semibold text-slate-600">
-            Recent offers
+            Recent Sale
           </h2>
           <Link
             className="text-sm text-blue-800 hover:underline"

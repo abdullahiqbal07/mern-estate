@@ -6,11 +6,13 @@ import {
   ref,
   uploadBytesResumable,
 } from "firebase/storage";
-import { useSelector } from "react-redux";
+import { tokenExpired } from "../redux/user/UserSlice";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 export default function CreateListing() {
   const [file, setFile] = useState([]);
+  const dispatch = useDispatch();
   const [formData, setFormData] = useState({
     imageUrls: [],
     name: "",
@@ -146,6 +148,13 @@ export default function CreateListing() {
           userRef: currentUser._id,
         }),
       });
+
+      if (response.status === 401) {
+        // Token expired, dispatch action and handle redirection
+        dispatch(tokenExpired());
+        return; // Stop further execution
+      }
+
       const data = await response.json();
       console.log(data);
       setLoading(false);

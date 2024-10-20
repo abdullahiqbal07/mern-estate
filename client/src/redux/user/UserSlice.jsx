@@ -58,6 +58,11 @@ const userSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
     },
+    tokenExpired: (state) => {
+      state.currentUser = null; // Clear current user
+      state.error = null; // Clear error
+      state.loading = false;
+    },
   },
 });
 
@@ -75,6 +80,7 @@ export const {
   signOutStart,
   signOutSuccess,
   signOutFailure,
+  tokenExpired,
 } = userSlice.actions;
 
 export default userSlice.reducer;

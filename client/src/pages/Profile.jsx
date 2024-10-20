@@ -10,6 +10,7 @@ import {
   signOutStart,
   signOutSuccess,
   signOutFailure,
+  tokenExpired,
 } from "../redux/user/UserSlice";
 import {
   getDownloadURL,
@@ -19,6 +20,7 @@ import {
 } from "firebase/storage";
 import { app } from "../firebase";
 import { Link } from "react-router-dom";
+import ConfirmationModal from "../components/ConfirmationModal";
 
 export default function Profile() {
   const createRef = useRef(null);
@@ -32,7 +34,10 @@ export default function Profile() {
   const [success, setSuccess] = useState(false);
   const [listings, setListings] = useState([]);
   const [showListings, setShowListings] = useState(false);
-  console.log(currentUser.avatar)
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [showListingsError, setShowListingsError] = useState(false);
+  console.log(currentUser.avatar);
 
   useEffect(() => {
     if (file) {
@@ -73,7 +78,6 @@ export default function Profile() {
   const handleClick = async (e) => {
     e.preventDefault();
     dispatch(updateStart());
-    console.log(formData);
     try {
       const response = await fetch(`/api/user/updateuser/${currentUser._id}`, {
         method: "POST",
@@ -81,28 +85,53 @@ export default function Profile() {
         body: JSON.stringify(formData),
       });
 
+      if (response.status === 401) {
+        // Token expired, dispatch action and handle redirection
+        dispatch(tokenExpired());
+        return; // Stop further execution
+      }
+
       const data = await response.json();
-      console.log(data);
       if (data.success === false) {
         console.log("you are getting error", data.message);
         dispatch(updateFailure(data.message));
+        setTimeout(() => {
+          dispatch(updateFailure(""));
+        }, 3000);
         return;
       }
 
       dispatch(updateSuccess(data));
       setSuccess(true);
+      setTimeout(() => {
+        setSuccess(false);
+      }, 3000);
     } catch (error) {
       dispatch(updateFailure(error.message));
+      setTimeout(() => {
+        dispatch(updateFailure(""));
+      }, 3000);
     }
   };
 
   const handleDelete = async () => {
+    setIsModalOpen(true); // Open the confirmation modal
+  };
+
+  const confirmDelete  = async () => {
+    setIsModalOpen(false); // Close the modal after confirmation
     try {
       dispatch(deleteStart());
 
       const response = await fetch(`/api/user/deleteuser/${currentUser._id}`, {
         method: "DELETE",
       });
+
+      if (response.status === 401) {
+        // Token expired, dispatch action and handle redirection
+        dispatch(tokenExpired());
+        return; // Stop further execution
+      }
 
       const data = await response.json();
       if (data.success === false) {
@@ -142,15 +171,23 @@ export default function Profile() {
       }
       try {
         const response = await fetch(`/api/user/listings/${currentUser._id}`);
+
+        if (response.status === 401) {
+          // Token expired, dispatch action and handle redirection
+          dispatch(tokenExpired());
+          return; // Stop further execution
+        }
+
         const data = await response.json();
         if (data.success === false) {
-          setError(true);
+          console.log("Error: ");
+          setShowListingsError(true);
           return;
         }
-        console.log(data);
         setListings(data);
         setError(false);
         setShowListings(true);
+        setShowListingsError(false);
       } catch (error) {
         setError(true);
       }
@@ -162,6 +199,13 @@ export default function Profile() {
       const response = await fetch(`/api/listing/delete/${listingId}`, {
         method: "DELETE",
       });
+
+      if (response.status === 401) {
+        // Token expired, dispatch action and handle redirection
+        dispatch(tokenExpired());
+        return; // Stop further execution
+      }
+
       const data = response.json();
       if (data.success === false) {
         setError(true);
@@ -260,6 +304,12 @@ export default function Profile() {
         <span onClick={handleDelete} className="text-red-600 cursor-pointer">
           Delete Account
         </span>
+        {/* Confirmation Modal */}
+        <ConfirmationModal
+            isOpen={isModalOpen}
+            onConfirm={confirmDelete}
+            onCancel={() => setIsModalOpen(false)}
+          />
         <span onClick={handleSignOut} className="text-red-600 cursor-pointer">
           Sign Out
         </span>
@@ -280,6 +330,7 @@ export default function Profile() {
       >
         {showListings ? "Hide Listings" : "Show Listings"}
       </button>
+      {showListingsError && "No list is added currently"}
       {showListings && listings && listings.length > 0 && (
         <div className="flex flex-col gap-2 mt-7">
           <h1 className="text-2xl font-semibold text-center my-3">
